@@ -17,6 +17,7 @@ export class Simulation {
 
     private step(): void {
         this.stepFunc();
+        this.canvas.draw();
 
         if (!this.stopped)
             requestAnimationFrame(() => this.step());
