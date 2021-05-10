@@ -1,9 +1,12 @@
 #ifndef __LINALG_H__
 #define __LINALG_H__
 
+
 #include "utils.h"
 #include "vector.h"
 #include "matrix.h"
+
+#include "./print_utils.h"
 
 template<uint N, uint M, typename T = double>
 void gauss_jordan_elim(Matrix<N,M,T>& mat) {
@@ -57,7 +60,7 @@ Vector<N,T> lin_solve(const Matrix<N,M,T>& A, const Vector<N,T>& b) {
 
 template<uint N, uint M, typename T = double>
 Matrix<N,M,T> invert(const Matrix<N,M,T>& m) {
-    return lin_solve(Matrix<N,M,T>(1.0), m);
+    return lin_solve(m, Matrix<N,M,T>(1.0));
 }
 
 template<uint N, uint M, typename T = double>
