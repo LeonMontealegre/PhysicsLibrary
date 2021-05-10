@@ -1,4 +1,5 @@
 import {Vector} from "Vector";
+import {Grid} from "utils/Grid";
 
 type CapType = "butt" | "round" | "square";
 export class LineStyle {
@@ -26,6 +27,29 @@ export interface Painter {
 
     drawLine(a: Vector, b: Vector): void;
     drawCurve(p1: Vector, p2: Vector, c1: Vector, c2: Vector): void;
+
+    drawArrow(a: Vector, b: Vector, options?: {
+        len?: number,
+        angle?: number,
+        arrowStrokeStyle?: LineStyle,
+        lineStrokeStyle?: LineStyle
+    }): void;
+
+    drawGrid<T extends {id: string}>(
+        grid: Grid<T>,
+        styleCell: (val: T, pos: number[]) => {
+            fillStyle?: string;
+            strokeStyle?: string;
+        },
+        options?: {
+            cellWidth?: number;
+            cellHeight?: number;
+        }
+    ): void;
+
+    drawText(text: string, pos: Vector): void;
+
+    strokeRect(pos: Vector, size: Vector): void;
 
     fillRect(pos: Vector, size: Vector): void;
     fillCirc(pos: Vector, radius: number): void;

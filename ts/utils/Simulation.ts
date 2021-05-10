@@ -15,7 +15,7 @@ export class Simulation {
         this.stopped = true;
     }
 
-    private step(): void {
+    public step(): void {
         this.stepFunc();
         this.canvas.draw();
 

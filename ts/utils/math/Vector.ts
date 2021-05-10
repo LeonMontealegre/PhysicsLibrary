@@ -5,8 +5,7 @@ export class Vector {
 
     public constructor();
     public constructor(v: Vector);
-    public constructor(x: number);
-    public constructor(x: number, y: number);
+    public constructor(x: number, y?: number);
     public constructor(x: Vector | number = 0, y?: number) {
         if (x instanceof Vector) {
             this.x = x.x;
