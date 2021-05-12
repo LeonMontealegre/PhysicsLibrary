@@ -3,15 +3,18 @@
 
 #include <iostream>
 #include "utils.h"
+#include "vectordyn.h"
 #include "matrix.h"
 
-template<uint N, typename T = double>
-std::ostream& operator << (std::ostream& out, const Vector<N,T>& v) {
-    for (uint j = 0; j < N; j++) {
-        out << "[";
+template<typename T = double>
+std::ostream& operator << (std::ostream& out, const VectorDyn<T>& v) {
+    out << "┌ ┐" << std::endl;
+    for (uint j = 0; j < v.size(); j++) {
+        out << "│";
         out << v[j]; // "%2.2f"
-        out << "]" << std::endl;
+        out << "│" << std::endl;
     }
+    out << "└ ┘" << std::endl;
     return out;
 }
 
