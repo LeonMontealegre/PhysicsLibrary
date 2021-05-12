@@ -79,6 +79,22 @@ Vector<N,T> tri_diag_solve(const Matrix<3,M,T>& A, const Vector<N,T>& D) {
     return x;
 }
 
+
+template<typename T>
+Vector<3, T> cross(const Vector<3, T>& a, const Vector<3, T>& b) {
+    Vector<3, T> c(3);
+    c[0] =   a[1]*b[2] - a[2]*b[1];
+    c[1] = -(a[0]*b[2] - a[2]*b[0]);
+    c[2] =   a[0]*b[1] - a[1]*b[0];
+    return c;
+}
+
+template<typename T>
+T cross(const Vector<2, T>& a, const Vector<2, T>& b) {
+    return a[0]*b[1] - b[0]*a[1];
+}
+
+
 // NOTE: This is the Laplacian in cartesian coordinates
 template<int N>
 Matrix<N, N> laplacian_1d() {
