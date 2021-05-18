@@ -22,17 +22,17 @@ std::ostream& operator << (std::ostream& out, const VectorDyn<T>& v) {
 
 template<typename T = double>
 std::ostream& operator << (std::ostream& out, const MatrixDyn<T>& m) {
-    uint N = m.num_cols();
     uint M = m.num_rows();
+    uint N = m.num_cols();
 
     out << "┌";
     for (uint i = 0; i < N; i++)
         out << "   ";
     out << "┐" << std::endl;
 
-    for (uint j = 0; j < M; j++) {
+    for (uint i = 0; i < M; i++) {
         out << "│";
-        for (uint i = 0; i < N; i++) {
+        for (uint j = 0; j < N; j++) {
             if (m[i][j] >= 0)
                 out << " ";
             out << m[i][j] << " ";

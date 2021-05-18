@@ -6,56 +6,56 @@
 
 // Constructors
 template<typename T>
-MatrixDyn<T>::MatrixDyn(uint N_, uint M_, const T& val_): N(N_), M(M_) {
+MatrixDyn<T>::MatrixDyn(uint M_, uint N_, const T& val_): M(M_), N(N_) {
     // Allocates with VectorDyn constructor w/ M rows
-    cols = (VectorDyn<T>*)malloc(sizeof(VectorDyn<T>[N]));
-    for (uint i = 0; i < N; i++)
-        (void)(new (&cols[i]) VectorDyn<T>(M, val_));
+    rows = (VectorDyn<T>*)malloc(sizeof(VectorDyn<T>[M]));
+    for (uint i = 0; i < M; i++)
+        (void)(new (&rows[i]) VectorDyn<T>(N, val_));
 }
 
 template<typename T>
 MatrixDyn<T>::MatrixDyn(const std::initializer_list<std::initializer_list<T>>& vecs_) {
-    N = vecs_.size();
+    M = vecs_.size();
 
     // Allocates with VectorDyn constructor w/ M rows
-    cols = (VectorDyn<T>*)malloc(sizeof(VectorDyn<T>[N]));
+    rows = (VectorDyn<T>*)malloc(sizeof(VectorDyn<T>[M]));
 
     uint i = 0;
     for (auto vec_ : vecs_) {
-        (void)(new (&cols[i]) VectorDyn<T>(vec_));
-        M = cols[i].size(); // Assumes that all columns have same size
+        (void)(new (&rows[i]) VectorDyn<T>(vec_));
+        N = rows[i].size(); // Assumes that all columns have same size
         i++;
     }
 }
 
 template<typename T>
-MatrixDyn<T>::MatrixDyn(const MatrixDyn<T>& other): MatrixDyn<T>(other.N, other.M) {
-    for (uint i = 0; i < N; i++)
-        cols[i] = other[i];
+MatrixDyn<T>::MatrixDyn(const MatrixDyn<T>& other): MatrixDyn<T>(other.M, other.N) {
+    for (uint i = 0; i < M; i++)
+        rows[i] = other[i];
 }
 
 
 // Destructor
 template<typename T>
 MatrixDyn<T>::~MatrixDyn() {
-    if (!cols)
+    if (!rows)
         return;
 
     // Manually call destructors since we used `malloc` in constructor
     for (uint i = 0; i < N; i++)
-        cols[i].~VectorDyn<T>();
-    free(cols);
+        rows[i].~VectorDyn<T>();
+    free(rows);
 
-    cols = NULL;
+    rows = NULL;
 }
 
 
 // Assignment
 template<typename T>
 const MatrixDyn<T>& MatrixDyn<T>::operator = (const MatrixDyn<T>& other) {
-    assert(N == other.N && M == other.M);
-    for (uint i = 0; i < N; i++)
-        cols[i] = other[i];
+    assert(M == other.M && N == other.N);
+    for (uint i = 0; i < M; i++)
+        rows[i] = other[i];
     return *this;
 }
 
@@ -63,43 +63,43 @@ const MatrixDyn<T>& MatrixDyn<T>::operator = (const MatrixDyn<T>& other) {
 // Indexing
 template<typename T>
 VectorDyn<T>& MatrixDyn<T>::operator [] (uint i) {
-    return cols[i];
+    return rows[i];
 }
 
 template<typename T>
 const VectorDyn<T>& MatrixDyn<T>::operator [] (uint i) const {
-    return cols[i];
+    return rows[i];
 }
 
 
 // Binary matrix operations
 template<typename T>
 MatrixDyn<T> MatrixDyn<T>::operator + (const MatrixDyn<T>& mat) const {
-    assert(N == mat.N && M == mat.M);
-    MatrixDyn<T> result(N, M);
-    for (uint i = 0; i < N; i++)
-        result.cols[i] = cols[i] + mat.cols[i];
+    assert(M == mat.M && N == mat.N);
+    MatrixDyn<T> result(M, N);
+    for (uint i = 0; i < M; i++)
+        result.rows[i] = rows[i] + mat.rows[i];
     return result;
 }
 
 template<typename T>
 MatrixDyn<T> MatrixDyn<T>::operator - (const MatrixDyn<T>& mat) const {
-    assert(N == mat.N && M == mat.M);
-    MatrixDyn<T> result(N, M);
-    for (uint i = 0; i < N; i++)
-        result.cols[i] = cols[i] - mat.cols[i];
+    assert(M == mat.M && N == mat.N);
+    MatrixDyn<T> result(M, N);
+    for (uint i = 0; i < M; i++)
+        result.rows[i] = rows[i] - mat.rows[i];
     return result;
 }
 
 template<typename T>
 MatrixDyn<T> MatrixDyn<T>::operator * (const MatrixDyn<T>& m) const {
-    assert(N == m.M);
+    assert(N == m.M); // M x N  x  N x K for matrix multiplication
     uint K = m.N;
-    MatrixDyn<T> result(K, M);
-    auto t_mat = this->transpose();
+    MatrixDyn<T> result(M, K);
+    auto t_m = m.transpose();
     for (uint i = 0; i < M; i++) {
         for (uint j = 0; j < K; j++)
-            result[j][i] = t_mat[i].dot(m[j]);
+            result[i][j] = rows[i].dot(t_m[j]);
     }
     return result;
 }
@@ -108,9 +108,8 @@ template<typename T>
 VectorDyn<T> MatrixDyn<T>::operator * (const VectorDyn<T>& v) const {
     assert(N == v.size());
     VectorDyn<T> result(M);
-    auto t_mat = this->transpose();
     for (uint i = 0; i < M; i++)
-        result[i] = t_mat[i].dot(v);
+        result[i] = rows[i].dot(v);
     return result;
 }
 
@@ -118,17 +117,17 @@ VectorDyn<T> MatrixDyn<T>::operator * (const VectorDyn<T>& v) const {
 // Binary scalar operations
 template<typename T>
 MatrixDyn<T> MatrixDyn<T>::operator * (const T& scalar) const {
-    MatrixDyn<T> result;
-    for (uint i = 0; i < N; i++)
-        result.cols[i] = cols[i] * scalar;
+    MatrixDyn<T> result(M, N);
+    for (uint i = 0; i < M; i++)
+        result.rows[i] = rows[i] * scalar;
     return result;
 }
 
 template<typename T>
 MatrixDyn<T> MatrixDyn<T>::operator / (const T& scalar) const {
-    MatrixDyn<T> result;
-    for (uint i = 0; i < N; i++)
-        result.cols[i] = cols[i] / scalar;
+    MatrixDyn<T> result(M, N);
+    for (uint i = 0; i < M; i++)
+        result.rows[i] = rows[i] / scalar;
     return result;
 }
 
@@ -136,45 +135,45 @@ MatrixDyn<T> MatrixDyn<T>::operator / (const T& scalar) const {
 // Change operators
 template<typename T>
 MatrixDyn<T>& MatrixDyn<T>::operator += (const MatrixDyn<T>& mat) {
-    assert(N == mat.N && M == mat.M);
-    for (uint i = 0; i < N; i++)
-        cols[i] += mat[i];
+    assert(M == mat.M && N == mat.N);
+    for (uint i = 0; i < M; i++)
+        rows[i] += mat[i];
     return *this;
 }
 
 template<typename T>
 MatrixDyn<T>& MatrixDyn<T>::operator -= (const MatrixDyn<T>& mat) {
-    assert(N == mat.N && M == mat.M);
-    for (uint i = 0; i < N; i++)
-        cols[i] -= mat[i];
+    assert(M == mat.M && N == mat.N);
+    for (uint i = 0; i < M; i++)
+        rows[i] -= mat[i];
     return *this;
 }
 
 template<typename T>
 MatrixDyn<T>& MatrixDyn<T>::operator += (const T& scalar) {
-    for (uint i = 0; i < N; i++)
-        cols[i] += scalar;
+    for (uint i = 0; i < M; i++)
+        rows[i] += scalar;
     return *this;
 }
 
 template<typename T>
 MatrixDyn<T>& MatrixDyn<T>::operator -= (const T& scalar) {
-    for (uint i = 0; i < N; i++)
-        cols[i] -= scalar;
+    for (uint i = 0; i < M; i++)
+        rows[i] -= scalar;
     return *this;
 }
 
 template<typename T>
 MatrixDyn<T>& MatrixDyn<T>::operator *= (const T& scalar) {
-    for (uint i = 0; i < N; i++)
-        cols[i] *= scalar;
+    for (uint i = 0; i < M; i++)
+        rows[i] *= scalar;
     return *this;
 }
 
 template<typename T>
 MatrixDyn<T>& MatrixDyn<T>::operator /= (const T& scalar) {
-    for (uint i = 0; i < N; i++)
-        cols[i] /= scalar;
+    for (uint i = 0; i < M; i++)
+        rows[i] /= scalar;
     return *this;
 }
 
@@ -182,9 +181,9 @@ MatrixDyn<T>& MatrixDyn<T>::operator /= (const T& scalar) {
 // Unary operations
 template<typename T>
 MatrixDyn<T> MatrixDyn<T>::operator - () const {
-    MatrixDyn<T> result(N, M);
-    for (uint i = 0; i < N; i++)
-        result.cols[i] = -cols[i];
+    MatrixDyn<T> result(M, N);
+    for (uint i = 0; i < M; i++)
+        result.rows[i] = -rows[i];
     return result;
 }
 
@@ -192,23 +191,25 @@ MatrixDyn<T> MatrixDyn<T>::operator - () const {
 // Other operations
 template<typename T>
 T MatrixDyn<T>::det() const {
-    assert(N == M); // Only square matrices have determinants
+    assert(M == N); // Only square matrices have determinants
 
-    if (N == 2)
-        return cols[0][0]*cols[1][1] - cols[1][0]*cols[0][1];
-    int sign = +1;
+    // 2x2 determinant
+    if (M == 2)
+        return rows[0][0]*rows[1][1] - rows[1][0]*rows[0][1];
+
     T det(0);
+    int sign = +1;
     for (uint l = 0; l < N; l++) {
-        MatrixDyn<T> m2(N-1, M-1);
-        for (uint i = 0; i < l; i++) {
-            for (uint j = 1; j < M; j++)
-                m2[i][j-1] = cols[i][j];
+        MatrixDyn<T> m2(N-1, N-1);
+        for (uint i = 1; i < N; i++) {
+            for (uint j = 0; j < l; j++)
+                m2[i-1][j] = rows[i][j];
         }
-        for (uint i = l+1; i < N; i++) {
-            for (uint j = 1; j < M; j++)
-                m2[i-1][j-1] = cols[i][j];
+        for (uint i = 1; i < N; i++) {
+            for (uint j = l+1; j < N; j++)
+                m2[i-1][j-1] = rows[i][j];
         }
-        det += sign * cols[l][0] * m2.det();
+        det += sign * rows[0][l] * m2.det();
         sign *= -1;
     }
     return det;
@@ -216,32 +217,44 @@ T MatrixDyn<T>::det() const {
 
 template<typename T>
 VectorDyn<T> MatrixDyn<T>::flatten() const {
-    VectorDyn<T> v(N*M);
+    VectorDyn<T> v(M*N);
     uint k = 0;
-    for (uint i = 0; i < N; i++) {
-        for (uint j = 0; j < M; j++)
-            v[k++] = cols[i][j];
+    for (uint i = 0; i < M; i++) {
+        for (uint j = 0; j < N; j++)
+            v[k++] = rows[i][j];
     }
     return v;
 }
 
 template<typename T>
 MatrixDyn<T> MatrixDyn<T>::transpose() const {
-    MatrixDyn<T> m(M, N);
-    for (uint i = 0; i < N; i++) {
-        for (uint j = 0; j < M; j++)
-            m[j][i] = cols[i][j];
+    MatrixDyn<T> m(N, M);
+    for (uint i = 0; i < M; i++) {
+        for (uint j = 0; j < N; j++)
+            m[j][i] = rows[i][j];
     }
     return m;
 }
 
 // Access operations
 template<typename T>
+uint MatrixDyn<T>::num_rows() const {
+    return M;
+}
+
+template<typename T>
 uint MatrixDyn<T>::num_cols() const {
     return N;
 }
 
-template<typename T>
-uint MatrixDyn<T>::num_rows() const {
-    return M;
+
+// Binary scalar operations (LHS)
+template <typename T>
+MatrixDyn<T> operator * (const T& scalar, const MatrixDyn<T>& mat) {
+    uint M = mat.num_rows();
+    uint N = mat.num_cols();
+    MatrixDyn<T> result(M, N);
+    for (uint i = 0; i < M; i++)
+        result[i] = scalar * mat[i];
+    return result;
 }

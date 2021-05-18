@@ -6,12 +6,12 @@
 #include "utils.h"
 #include "vectordyn.h"
 
-// M rows, N cols (MxN) matrix
+// M rows, N cols (MxN)[row][col] matrix
 template<typename T = double>
 class MatrixDyn {
 public:
     // Constructors
-    MatrixDyn(uint N_, uint M_, const T& val_ = T(0));
+    MatrixDyn(uint M_, uint N_, const T& val_ = T(0));
     MatrixDyn(const std::initializer_list<std::initializer_list<T>>& vecs_);
     MatrixDyn(const MatrixDyn<T>& other);
 
@@ -53,12 +53,12 @@ public:
     MatrixDyn<T> transpose() const;
 
     // Access operations
-    uint num_cols() const;
     uint num_rows() const;
+    uint num_cols() const;
 
 protected:
-    uint N, M;
-    VectorDyn<T>* cols;
+    uint M, N;
+    VectorDyn<T>* rows;
 };
 
 // Binary scalar operations (LHS)
