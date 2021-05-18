@@ -9,8 +9,11 @@ template<typename T>
 MatrixDyn<T>::MatrixDyn(uint M_, uint N_, const T& val_): M(M_), N(N_) {
     // Allocates with VectorDyn constructor w/ M rows
     rows = (VectorDyn<T>*)malloc(sizeof(VectorDyn<T>[M]));
-    for (uint i = 0; i < M; i++)
-        (void)(new (&rows[i]) VectorDyn<T>(N, val_));
+    for (uint i = 0; i < M; i++) {
+        (void)(new (&rows[i]) VectorDyn<T>(N));
+        if (i < N)
+            rows[i][i] = val_;
+    }
 }
 
 template<typename T>
