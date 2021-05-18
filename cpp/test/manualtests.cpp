@@ -1,5 +1,5 @@
 #include "../include/leon/vectordyn.h"
-#include "../include/leon/matrixdyn.h"
+#include "../include/leon/matrix.h"
 #include "../include/leon/vector.h"
 #include "../include/leon/print_utils.h"
 
@@ -8,13 +8,15 @@ int main() {
 
     std::cout << v << std::endl;
 
-    MatrixDyn<> d(3, 3, 1);
+    Matrix<3,3> d(1);
 
     std::cout << d << std::endl;
 
-    MatrixDyn<> d2({{1,4,7}, {2,5,8}, {3,6,9}});
+    Matrix<3,3> d2({{1,2,3}, {4,5,6}, {7,8,9}});
 
-    std::cout << (d * d2) << std::endl;
+    std::cout << (d2) << std::endl;
+
+    std::cout << ((d * d2) * d2) << std::endl;
 
     return 0;
 }
