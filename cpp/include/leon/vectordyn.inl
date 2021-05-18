@@ -2,7 +2,7 @@
 
 
 // Constructors
-template <typename T>
+template<typename T>
 VectorDyn<T>::VectorDyn(uint N_, const T& val) {
     vals = new T[(N = N_)];
     for (uint i = 0; i < N; i++)

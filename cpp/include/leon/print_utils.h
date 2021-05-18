@@ -4,7 +4,9 @@
 #include <iostream>
 #include "utils.h"
 #include "vectordyn.h"
-#include "matrix.h"
+#include "matrixdyn.h"
+
+// TODO: fix the fact that these only work for like single-digit integers
 
 template<typename T = double>
 std::ostream& operator << (std::ostream& out, const VectorDyn<T>& v) {
@@ -18,21 +20,31 @@ std::ostream& operator << (std::ostream& out, const VectorDyn<T>& v) {
     return out;
 }
 
-template<uint N, uint M, typename T = double>
-std::ostream& operator << (std::ostream& out, const Matrix<N,M,T>& m) {
+template<typename T = double>
+std::ostream& operator << (std::ostream& out, const MatrixDyn<T>& m) {
+    uint N = m.num_cols();
+    uint M = m.num_rows();
+
+    out << "┌";
+    for (uint i = 0; i < N; i++)
+        out << "   ";
+    out << "┐" << std::endl;
+
     for (uint j = 0; j < M; j++) {
-        out << "[";
+        out << "│";
         for (uint i = 0; i < N; i++) {
             if (m[i][j] >= 0)
                 out << " ";
-            out << m[i][j]; // "%2.1f"
-            if (i < N-1)
-                out << " ";
+            out << m[i][j] << " ";
         }
-        out << "]";
-        if (j < M-1)
-            out << std::endl;
+        out << "│" << std::endl;
     }
+
+    out << "└";
+    for (uint i = 0; i < N; i++)
+        out << "   ";
+    out << "┘";
+
     return out;
 }
 

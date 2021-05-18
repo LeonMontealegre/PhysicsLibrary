@@ -31,9 +31,7 @@ public:
     VectorDyn<T> operator * (const VectorDyn<T>& vec) const;
 
     // Binary scalar operations
-    // template<typename T2>
     VectorDyn<T> operator * (const T& scalar) const;
-    // template<typename T2>
     VectorDyn<T> operator / (const T& scalar) const;
 
     // Change operators
@@ -42,13 +40,9 @@ public:
     VectorDyn<T>& operator *= (const VectorDyn<T>& vec);
     VectorDyn<T>& operator /= (const VectorDyn<T>& vec);
 
-    // template<typename T2>
     VectorDyn<T>& operator += (const T& scalar);
-    // template<typename T2>
     VectorDyn<T>& operator -= (const T& scalar);
-    // template<typename T2>
     VectorDyn<T>& operator *= (const T& scalar);
-    // template<typename T2>
     VectorDyn<T>& operator /= (const T& scalar);
 
     // Unary operations
