@@ -28,7 +28,7 @@ void gauss_jordan_elim(MatrixDyn<T>& mat) {
 
             T elim_num = mat[i][k];
             for (uint j = 0; j < N; j++)
-                mat[i][j] -= (elim_num * mat[i][k]);
+                mat[i][j] -= (elim_num * mat[k][j]);
         }
     }
 }
@@ -61,8 +61,8 @@ MatrixDyn<T> lin_solve(const MatrixDyn<T>& A, const MatrixDyn<T>& B) {
     return sol;
 }
 
-template<uint N, uint M, typename T = double>
-Vector<N,T> lin_solve(const MatrixDyn<T>& A, const VectorDyn<T>& b) {
+template<typename T = double>
+VectorDyn<T> lin_solve(const MatrixDyn<T>& A, const VectorDyn<T>& b) {
     uint M = A.num_rows();
     uint N = A.num_cols();
     uint M2 = b.size();
@@ -70,7 +70,7 @@ Vector<N,T> lin_solve(const MatrixDyn<T>& A, const VectorDyn<T>& b) {
     assert(M == M2); // Need same # of rows
 
     // Create augmented [A|b] matrix
-    Matrix<T> mat(M, N+1);
+    MatrixDyn<T> mat(M, N+1);
     for (uint i = 0; i < M; i++) {
         for (uint j = 0; j < N; j++)
             mat[i][j] = A[i][j];
@@ -136,10 +136,10 @@ MatrixDyn<> laplacian_1d(uint N) {
 }
 
 // NOTE: This is the Laplacian in cartesian coordinates
-MatrixDyn<> laplacian_2d(uint N) {
-    auto nxn = MatrixDyn(N, N, 1);
-    auto lap1d = laplacian_1d(N);
-    return nxn.kron(lap1d) + lap1d.kron(nxn);
-}
+// MatrixDyn<> laplacian_2d(uint N) {
+//     auto nxn = MatrixDyn(N, N, 1);
+//     auto lap1d = laplacian_1d(N);
+//     return nxn.kron(lap1d) + lap1d.kron(nxn);
+// }
 
 #endif

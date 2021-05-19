@@ -1,6 +1,7 @@
 #include "../include/leon/vectordyn.h"
 #include "../include/leon/matrix.h"
 #include "../include/leon/vector.h"
+#include "../include/leon/linalg.h"
 #include "../include/leon/print_utils.h"
 
 int main() {
@@ -16,7 +17,7 @@ int main() {
 
     std::cout << (d2) << std::endl;
 
-    std::cout << ((d * d2) * d2) << std::endl;
+    std::cout << invert(d) << std::endl;
 
     return 0;
 }

@@ -45,7 +45,7 @@ MatrixDyn<T>::~MatrixDyn() {
         return;
 
     // Manually call destructors since we used `malloc` in constructor
-    for (uint i = 0; i < N; i++)
+    for (uint i = 0; i < M; i++)
         rows[i].~VectorDyn<T>();
     free(rows);
 
