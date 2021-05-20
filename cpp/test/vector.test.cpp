@@ -31,6 +31,34 @@ int main() {
 
         expect(v1/5).toEqual(Vector<3>({0.6, 0.8, 1.0}));
     });
+    test("VectorDyn – Basic Operations", []() {
+        VectorDyn<> v1({3,4,5});
+        VectorDyn<> v2({7,8,9});
+        VectorDyn<> v3({1,2});
+        VectorDyn<> v4({1,2,3,4});
+
+        expect(v1).toEqual(VectorDyn<>({3,4,5}));
+
+        v1 = v2;
+
+        expect(v1).toEqual(VectorDyn<>({7,8,9}));
+        expect(v2).toEqual(VectorDyn<>({7,8,9}));
+
+        v2[1] = 28;
+
+        expect(v1).toEqual(VectorDyn<>({7,8,9}));
+        expect(v2).toEqual(VectorDyn<>({7,28,9}));
+
+        v1 = v4;
+
+        expect(v1).toEqual(VectorDyn<>({1,2,3,4}));
+        expect(v4).toEqual(VectorDyn<>({1,2,3,4}));
+
+        v1 = v3;
+
+        expect(v1).toEqual(VectorDyn<>({1,2}));
+        expect(v3).toEqual(VectorDyn<>({1,2}));
+    });
 
 
     return 0;

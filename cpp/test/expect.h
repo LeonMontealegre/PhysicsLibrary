@@ -12,9 +12,12 @@ std::string curTitle = "";
 uint failedTests = 0;
 uint subTestCount = 0;
 
+int curTestLine;
+char* curTestFile;
+
 typedef void (*test_func)(void);
 
-#define error(s, ...) {fprintf(stderr, "   %s✕ Test #%d Failed – %s", console_colors::RED, subTestCount, console_colors::RESET); fprintf(stderr, s, ##__VA_ARGS__); failedTests++; errored = true;}
+#define error(s, ...) {fprintf(stderr, "   %s✕ Test #%d Failed (File %s, line %d) – %s", console_colors::RED, subTestCount, __FILE__, __LINE__, console_colors::RESET); fprintf(stderr, s, ##__VA_ARGS__); failedTests++; errored = true;}
 #define success() { if (!errored) fprintf(stderr, "   %s✓ Test #%d Succeeded%s\n", console_colors::GREEN, subTestCount, console_colors::RESET);}
 
 

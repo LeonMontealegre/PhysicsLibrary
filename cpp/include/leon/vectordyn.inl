@@ -47,9 +47,16 @@ VectorDyn<T>::~VectorDyn() {
 // Assignment
 template<typename T>
 const VectorDyn<T>& VectorDyn<T>::operator = (const VectorDyn<T>& other) {
-    assert(N == other.N);
+    // If not same size, need to reinitialize array
+    if (N != other.N) {
+        delete [] vals;
+        vals = new T[(N = other.N)];
+    }
+
+    // Copy over values
     for (uint i = 0; i < N; i++)
         vals[i] = other.vals[i];
+
     return *this;
 }
 

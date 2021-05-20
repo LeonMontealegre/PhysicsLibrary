@@ -56,9 +56,24 @@ MatrixDyn<T>::~MatrixDyn() {
 // Assignment
 template<typename T>
 const MatrixDyn<T>& MatrixDyn<T>::operator = (const MatrixDyn<T>& other) {
-    assert(M == other.M && N == other.N);
-    for (uint i = 0; i < M; i++)
-        rows[i] = other[i];
+    // If not same size, need to reinitialize values
+    if (M != other.M) {
+        // Manually call destructors since we used `malloc` in constructor
+        for (uint i = 0; i < M; i++)
+            rows[i].~VectorDyn<T>();
+        free(rows);
+
+        // Allocates with VectorDyn constructor w/ M rows
+        rows = (VectorDyn<T>*)malloc(sizeof(VectorDyn<T>[(M = other.M)]));
+        for (uint i = 0; i < M; i++)
+            (void)(new (&rows[i]) VectorDyn<T>(other[i]));
+    } else {
+        // Otherwise just copy over rows
+        for (uint i = 0; i < M; i++)
+            rows[i] = other[i];
+    }
+    N = other.N;
+
     return *this;
 }
 
