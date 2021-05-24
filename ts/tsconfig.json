@@ -23,5 +23,8 @@
             "canvas/*": ["utils/canvas/*"],
             "utils/*": ["utils/*"]
         }
-    }
+    },
+    "exclude": [
+        "test"
+    ]
   }
