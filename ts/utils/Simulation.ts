@@ -1,6 +1,5 @@
 import {Painter} from "canvas/Painter";
 import {Canvas} from "canvas/Canvas";
-import {OptionsPanel} from "./OptionsPanel";
 
 export class Simulation<T extends Record<string, any>> {
     private canvas: Canvas;

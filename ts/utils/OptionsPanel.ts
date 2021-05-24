@@ -56,8 +56,6 @@ import {Simulation} from "./Simulation";
             text-align: left;
         }
     `;
-    // stylesheet.type = "text/css";
-
     document.head.appendChild(stylesheet);
 })();
 
