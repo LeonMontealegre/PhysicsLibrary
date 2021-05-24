@@ -1,0 +1,22 @@
+{
+  "name": "leon-physics-scripts",
+  "version": "1.0.6",
+  "private": true,
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "start": "webpack-dev-server --config webpack.config.js"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "emscript-loader": "^1.0.2",
+    "html-webpack-plugin": "^4.5.0",
+    "react-dev-utils": "^10.2.1",
+    "ts-loader": "^8.0.4",
+    "typescript": "^4.0.3",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0",
+    "yargs": "^16.0.3"
+  }
+}
