@@ -141,6 +141,7 @@ export class OptionsPanel<T extends Record<string, any>> {
         this.sim = sim;
         this.options = options;
 
+        // Create dynamic panel
         this.optionsPanel = html("div", { className: "options-panel" },
             (this.optionsPanelHeader = html("div", { className: "options-panel-header" }, "Options")),
             (this.optionsPanelContent = html("div", { className: "options-panel-content" })),
@@ -148,10 +149,11 @@ export class OptionsPanel<T extends Record<string, any>> {
                 html("button", { title: "Resume Simulation", onclick: () => { if (sim.isStopped()) sim.start(); } }, html("img", { src: PlayIconB64 })),
                 html("button", { title: "Stop Simulation",   onclick: () => { if (!sim.isStopped()) sim.stop(); } }, html("img", { src: StopIconB64 })),
                 html("button", { title: "Step Simulation",   onclick: () => { sim.step();  } },                      html("img", { src: StepIconB64 })),
-                html("button", { title: "Reset Simulation",  onclick: () => { sim.reset(); } },                      html("img", { src: ResetIconB64 }))
+                html("button", { title: "Reset Simulation",  onclick: () => { sim.reset(); this.update(); } },       html("img", { src: ResetIconB64 }))
             )
         );
         document.body.appendChild(this.optionsPanel);
+
 
         // Setup panel dragging
         (() => {
@@ -186,6 +188,19 @@ export class OptionsPanel<T extends Record<string, any>> {
 
         })();
 
+
+        // Setup shortcuts to play/pause the simulation
+        document.addEventListener("keypress", (ev) => {
+            // Toggle play/pause of sim
+            if (ev.key === " ") {
+                if (sim.isStopped())
+                    sim.start();
+                else
+                    sim.stop();
+            }
+        });
+
+
         this.update();
     }
 
@@ -201,10 +216,9 @@ export class OptionsPanel<T extends Record<string, any>> {
                 if (option.type === "integer" || option.type === "float") {
                     const val = data[key] as number;
                     const inputType = option.inputType ?? "normal";
-                    console.log(inputType);
                     return html("input", { id: `sim-${key}`, type: (inputType === "normal" ? "number" : "range"), value: `${val}`,
                                 min: `${option.min}`, max: `${option.max}`, step: `${option.step}`,
-                                onchange: (ev) => { sim.onSimChange({ [key]: (ev.target as HTMLInputElement).valueAsNumber } as Partial<T>); console.log("ASDDSAASD"); reupdate(); } }
+                                onchange: (ev) => { sim.onSimChange({ [key]: (ev.target as HTMLInputElement).valueAsNumber } as Partial<T>); reupdate(); } }
                         )
                 } else if (option.type === "array") {
                     const vals = data[key] as number[];
