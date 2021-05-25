@@ -1,6 +1,8 @@
 import {Simulation} from "utils/Simulation";
 import {OptionsPanel} from "utils/OptionsPanel";
 
+import "utils/WASM";
+
 import "utils/Array";
 
 
