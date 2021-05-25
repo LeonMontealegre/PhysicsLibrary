@@ -43,12 +43,10 @@ const sim = new Simulation<typeof initialSim>("canvas",
 
 
 const panel = new OptionsPanel(sim, {
-    N:      { label: "# of bobs",          type: "integer", min: 1, max: 20, step: 1 },
+    N:      { label: "# of bobs",          type: "integer", min: 1, max: 20, step: 1, inputType: "slider" },
     m:      { label: "Mass of bobs",       type: "array", elements: { type: "float", min: 0.01, max: 20  } },
     L:      { label: "Length of strings",  type: "array", elements: { type: "float", min: 0.01, max: 20  } },
     theta:  { label: "Angles",             type: "array", elements: { type: "float", min: 0,    max: 360 } },
     dTheta: { label: "Angular Velocities", type: "array", elements: { type: "float", min: -20,  max: 20  } }
 });
 
-
-console.log("HELLO");

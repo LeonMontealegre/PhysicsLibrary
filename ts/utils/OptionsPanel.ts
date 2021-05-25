@@ -2,7 +2,7 @@ import {V} from "Vector";
 import {Simulation} from "./Simulation";
 
 
-(function Styles() {
+(function InjectStyles() {
     const stylesheet = document.createElement("style");
     stylesheet.innerHTML = `
         .options-panel {
@@ -35,7 +35,7 @@ import {Simulation} from "./Simulation";
             border: solid 1px black;
         }
         .options-panel-content > div {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .options-panel-content > div:last-child {
             margin-bottom: 0px;
@@ -47,10 +47,14 @@ import {Simulation} from "./Simulation";
         }
         .options-panel-content input {
             width: 35px;
+            height: 20px;
             margin-left: 2px;
             border: solid 1px gray;
             border-radius: 5px;
             text-align: left;
+        }
+        .options-panel-content input[type="range"] {
+            width: 150px;
         }
 
         .options-panel-footer {
@@ -100,6 +104,7 @@ type NumberOption = BaseOption & {
     min: number;
     max: number;
     step?: number;
+    inputType?: "normal" | "slider";
 }
 type ArrayOption = BaseOption & {
     type: "array";
@@ -131,7 +136,6 @@ export class OptionsPanel<T extends Record<string, any>> {
     private optionsPanel: HTMLDivElement;
     private optionsPanelHeader: HTMLDivElement;
     private optionsPanelContent: HTMLDivElement;
-    private optionsPanelFooter: HTMLDivElement;
 
     public constructor(sim: Simulation<T>, options: Options<Partial<T>>) {
         this.sim = sim;
@@ -140,12 +144,12 @@ export class OptionsPanel<T extends Record<string, any>> {
         this.optionsPanel = html("div", { className: "options-panel" },
             (this.optionsPanelHeader = html("div", { className: "options-panel-header" }, "Options")),
             (this.optionsPanelContent = html("div", { className: "options-panel-content" })),
-            (this.optionsPanelFooter = html("div", { className: "options-panel-footer" },
+            html("div", { className: "options-panel-footer" },
                 html("button", { title: "Resume Simulation", onclick: () => { if (sim.isStopped()) sim.start(); } }, html("img", { src: PlayIconB64 })),
                 html("button", { title: "Stop Simulation",   onclick: () => { if (!sim.isStopped()) sim.stop(); } }, html("img", { src: StopIconB64 })),
                 html("button", { title: "Step Simulation",   onclick: () => { sim.step();  } },                      html("img", { src: StepIconB64 })),
                 html("button", { title: "Reset Simulation",  onclick: () => { sim.reset(); } },                      html("img", { src: ResetIconB64 }))
-            ))
+            )
         );
         document.body.appendChild(this.optionsPanel);
 
@@ -196,7 +200,9 @@ export class OptionsPanel<T extends Record<string, any>> {
             function getHTML(): HTMLElement {
                 if (option.type === "integer" || option.type === "float") {
                     const val = data[key] as number;
-                    return html("input", { id: `sim-${key}`, type: "number", value: `${val}`,
+                    const inputType = option.inputType ?? "normal";
+                    console.log(inputType);
+                    return html("input", { id: `sim-${key}`, type: (inputType === "normal" ? "number" : "range"), value: `${val}`,
                                 min: `${option.min}`, max: `${option.max}`, step: `${option.step}`,
                                 onchange: (ev) => { sim.onSimChange({ [key]: (ev.target as HTMLInputElement).valueAsNumber } as Partial<T>); console.log("ASDDSAASD"); reupdate(); } }
                         )
