@@ -2,11 +2,12 @@ import {Painter} from "canvas/Painter";
 import {Canvas} from "canvas/Canvas";
 
 export class Simulation<T extends Record<string, any>> {
-    private canvas: Canvas;
     private simReducer: (sim?: T, change?: Partial<T>) => T;
     private stepFunc: (sim: T) => void;
 
     private sim: T;
+
+    private canvas: Canvas;
 
     private stopped: boolean;
 
@@ -14,11 +15,20 @@ export class Simulation<T extends Record<string, any>> {
                        simReducer: (sim?: T, change?: Partial<T>) => T,
                        stepFunc: (sim: T) => void,
                        drawFunc: (p: Painter, sim: T) => void) {
-        this.canvas = new Canvas(canvasId, (p) => drawFunc(p, this.sim));
         this.simReducer = simReducer;
         this.stepFunc = stepFunc;
+
         this.sim = simReducer();
+
+        this.canvas = new Canvas(canvasId, (p) => drawFunc(p, this.sim));
+
         this.stopped = true;
+    }
+
+    public reset(): void {
+        this.stopped = true;
+        this.sim = this.simReducer(); // Gets initial state
+        this.canvas.draw();
     }
 
     public step(): void {
@@ -30,7 +40,9 @@ export class Simulation<T extends Record<string, any>> {
     }
 
     public onSimChange(change?: Partial<T>): T {
-        return (this.sim = this.simReducer(this.sim, change));
+        this.sim = this.simReducer(this.sim, change);
+        this.canvas.draw(); // Redraw after change
+        return this.sim;
     }
 
     public start() {

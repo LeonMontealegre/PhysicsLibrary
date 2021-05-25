@@ -33,9 +33,6 @@ import {Simulation} from "./Simulation";
             color: black;
 
             border: solid 1px black;
-            border-radius: 15px;
-            border-top-right-radius: 0px;
-            border-top-left-radius: 0px;
         }
         .options-panel-content > div {
             margin-bottom: 10px;
@@ -55,9 +52,43 @@ import {Simulation} from "./Simulation";
             border-radius: 5px;
             text-align: left;
         }
+
+        .options-panel-footer {
+            height: 20px;
+
+            border: solid 1px black;
+            border-top: none;
+            border-bottom-right-radius: 15px;
+            border-bottom-left-radius: 15px;
+
+            text-align: center;
+
+            padding-top: 3px;
+            padding-bottom: 8px;
+
+            font-size: 15px;
+            color: pink;
+        }
+        .options-panel-footer button {
+            background: none;
+            padding: 0;
+            border: none;
+            text-decoration: none;
+
+            margin: 0px 10px;
+        }
+        .options-panel-footer img {
+            background: none;
+            cursor: pointer;
+        }
     `;
     document.head.appendChild(stylesheet);
 })();
+
+const StopIconB64  = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik02IDZoMTJ2MTJINnoiLz48L3N2Zz4=";
+const PlayIconB64  = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik04IDV2MTRsMTEtN3oiLz48L3N2Zz4=";
+const StepIconB64  = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgZmlsbD0iIzAwMDAwMCI+PHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik02IDE4bDguNS02TDYgNnYxMnpNMTYgNnYxMmgyVjZoLTJ6Ii8+PC9zdmc+";
+const ResetIconB64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI0IDI0IiBoZWlnaHQ9IjI0cHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0cHgiIGZpbGw9IiMwMDAwMDAiPjxnPjxwYXRoIGQ9Ik0wLDBoMjR2MjRIMFYweiIgZmlsbD0ibm9uZSIvPjwvZz48Zz48Zz48cGF0aCBkPSJNMTIsNVYyTDgsNmw0LDRWN2MzLjMxLDAsNiwyLjY5LDYsNmMwLDIuOTctMi4xNyw1LjQzLTUsNS45MXYyLjAyYzMuOTUtMC40OSw3LTMuODUsNy03LjkzQzIwLDguNTgsMTYuNDIsNSwxMiw1eiIvPjxwYXRoIGQ9Ik02LDEzYzAtMS42NSwwLjY3LTMuMTUsMS43Ni00LjI0TDYuMzQsNy4zNEM0LjksOC43OSw0LDEwLjc5LDQsMTNjMCw0LjA4LDMuMDUsNy40NCw3LDcuOTN2LTIuMDIgQzguMTcsMTguNDMsNiwxNS45Nyw2LDEzeiIvPjwvZz48L2c+PC9zdmc+";
 
 
 
@@ -100,6 +131,7 @@ export class OptionsPanel<T extends Record<string, any>> {
     private optionsPanel: HTMLDivElement;
     private optionsPanelHeader: HTMLDivElement;
     private optionsPanelContent: HTMLDivElement;
+    private optionsPanelFooter: HTMLDivElement;
 
     public constructor(sim: Simulation<T>, options: Options<Partial<T>>) {
         this.sim = sim;
@@ -107,7 +139,13 @@ export class OptionsPanel<T extends Record<string, any>> {
 
         this.optionsPanel = html("div", { className: "options-panel" },
             (this.optionsPanelHeader = html("div", { className: "options-panel-header" }, "Options")),
-            (this.optionsPanelContent = html("div", { className: "options-panel-content" }))
+            (this.optionsPanelContent = html("div", { className: "options-panel-content" })),
+            (this.optionsPanelFooter = html("div", { className: "options-panel-footer" },
+                html("button", { title: "Resume Simulation", onclick: () => { if (sim.isStopped()) sim.start(); } }, html("img", { src: PlayIconB64 })),
+                html("button", { title: "Stop Simulation",   onclick: () => { if (!sim.isStopped()) sim.stop(); } }, html("img", { src: StopIconB64 })),
+                html("button", { title: "Step Simulation",   onclick: () => { sim.step();  } },                      html("img", { src: StepIconB64 })),
+                html("button", { title: "Reset Simulation",  onclick: () => { sim.reset(); } },                      html("img", { src: ResetIconB64 }))
+            ))
         );
         document.body.appendChild(this.optionsPanel);
 
@@ -155,7 +193,6 @@ export class OptionsPanel<T extends Record<string, any>> {
         this.optionsPanelContent.innerHTML = "";
 
         Object.entries(this.options).forEach(([key, option]) => {
-            console.log("asdd");
             function getHTML(): HTMLElement {
                 if (option.type === "integer" || option.type === "float") {
                     const val = data[key] as number;
